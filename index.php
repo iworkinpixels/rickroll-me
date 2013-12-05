@@ -19,9 +19,8 @@
        <div style="margin: 100px auto 40px auto; width: 525px; text-align: center;">
 		   	<h1>Rickroll Me</h1>
 		   	<ol style="text-align: left;">
-		   		<li>Choose a song, pay the appropriate amount of BTC, and it starts playing in my headphones as soon as it's confirmed 6x!</li>
-		   		<li>If you'd like to "enjoy" the experience as well, <a href="rickroll.php">click here</a>.
-		   		<li>View the results on the webcam.</li>
+		   		<li>Choose a song, pay the appropriate amount of BTC, and it starts playing in my browser as soon as it's confirmed 6x!</li>
+		   		<li>To watch me listen to your video, <a href="rickroll.php">click here</a>.
 		   	</ol>
 		   	<br/><br/><br/>
 			
