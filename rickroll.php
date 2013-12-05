@@ -57,12 +57,8 @@
 
 				      function onPlayerStateChange(event) {
 				        if (event.data == YT.PlayerState.ENDED) {
-				          setTimeout(replayVideo, 1000);
+				          setTimeout('location.reload(true);', 1000);
 				        }
-				      }
-				      function replayVideo() {
-				        player.seekTo(0);
-				        player.playVideo();
 				      }
 				    </script>
 			<? } else { ?>
