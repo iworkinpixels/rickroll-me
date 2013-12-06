@@ -14,31 +14,25 @@
 	mysql_select_db($mysql_database) or die( "Unable to select database. Run setup first.");
 
 	//find the invoice form the database
-	$result = mysql_query("select price_in_usd, product_url, price_in_btc from invoices where invoice_id = $invoice_id");
+	$result = DB::query("select invoice_id, price_in_btc, video_code from invoices where invoice_id = %i", $invoice_id);
 	        
 	if (!$result) {
-	    die(__LINE__ . ' Invalid query: ' . mysql_error());
+	    die(__LINE__ . ' Invalid query: Please verify invoice id.');
 	}
 
-	while($row = mysql_fetch_array($result)) {
-		$product_url = $row['product_url'];  
-		$price_in_usd = $row['price_in_usd'];
-		$price_in_btc = $row['price_in_btc'];  
-	}
+	$price_in_btc = $result['invoice_id'];  
+	$price_in_btc = $result['price_in_btc'];  
+	$video_code = $result['video_code'];
 
 	//find the pending amount paid
-	$result = mysql_query("select value from pending_invoice_payments where invoice_id = $invoice_id");
-	         
-	while($row = mysql_fetch_array($result)){
-		 $amount_pending_btc += $row['value'];   
-	}
+	$result = DB::query("select sum(value) from pending_invoice_payments where invoice_id = %i", $invoice_id");
+
+	if ($result) $amount_pending_btc += $result['value'];   
 
 	//find the confirmed amount paid
-	$result = mysql_query("select value from invoice_payments where invoice_id = $invoice_id");
+	$result = mysql_query("select sum(value) from invoice_payments where invoice_id = $invoice_id");
 	         
-	while($row = mysql_fetch_array($result)){
-		$amount_paid_btc += $row['value']; 
-	}
+	if ($result) $amount_paid_btc += $row['value']; 
 
 ?>
 
@@ -68,7 +62,7 @@
 			</p>
 		<?php } else { ?>
 			<p>
-				Thank You for your purchase
+				Thank You for your purchase.  <a href="rickroll.php">Click here</a> to watch the fun and sing along.
 			</p>
 		<?php } ?>
 

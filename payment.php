@@ -1,22 +1,8 @@
 <?php
 	include 'include.php';
 
-	mysql_connect($mysql_host, $mysql_username, $mysql_password) or die(__LINE__ . ' Invalid connect: ' . mysql_error());
-	mysql_select_db($mysql_database) or die( "Unable to select database.");
-
 	$item = $_POST['item'];
 	$custom = strip_tags($_POST['custom']);
-
-<option value="1"> Never Gonna Give You Up (0.001953125 BTC)</option>
-<option value="2"> It's Tricky (0.00390625 BTC)</option>
-<option value="3"> Dragostea Din Tei (0.0078125 BTC)</option>
-<option value="4"> Nyan Cat (0.015625 BTC)</option>
-<option value="5"> Gangnam Style (0.03125 BTC)</option>
-<option value="6"> Call Me Maybe (0.0625 BTC)</option>
-<option value="7"> Peanut Butter Jelly Time (0.125 BTC)</option>
-<option value="8"> Friday (0.25 BTC)</option>
-<option value="9"> What Does The Fox Say? (0.5 BTC)</option>
-<option value="10"> YOU GET TO CHOOSE THE VIDEO! (1.0 BTC)</option>
 
 	switch($item) {
 		case 1:
@@ -64,14 +50,11 @@
 	}
 
 	if ($price_in_btc != 0 && $video != '') {
-		$query = "INSERT INTO invoices (price_in_btc, video_code) values('".$price_in_btc."','".$video."')";
-		$result = mysql_query($query);
+		$result = DB::query('INSERT INTO invoices (price_in_btc, video_code) values (%d,%s)', $price_in_btc, $video);
 	    
-		if (!$result) {
-		    die('Database error.  Please go back and try again.');
-		}
-
-		$invoice_id = mysql_insert_id();
+		if (!$result) die('Database error.  Please go back and try again.');
+		$invoice_id = DB::insertId();
+		if(!$invoice_id) die('ERROR: No invoice ID.  Please try again.');
 	} else {
 		die('Invoice error.  Please go back and try again.');
 	}

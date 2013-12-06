@@ -1,8 +1,9 @@
 <?php
 	include 'include.php';
+	$videos = DB::query('SELECT * FROM videos ORDER BY name ASC');
 
-	mysql_connect($mysql_host, $mysql_username, $mysql_password) or die(__LINE__ . ' Invalid connect: ' . mysql_error());
-	mysql_select_db($mysql_database) or die( "Unable to select database.");
+	foreach ($videos as $v) {
+	}
 ?>
 
 <html>
@@ -11,9 +12,19 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script type="text/javascript">
 	$(document).ready(function() {
-		
+		$( "#item" ).change(function() {
+			if ($('#item').val() == '0')
+				$('#extra').show();
+			else
+				$('#extra').hide();
+		});	
 	});
 	</script>
+	<style>
+		#extra {
+			display: none;
+		}
+	</style>
 </head>
     <body>
        <div style="margin: 100px auto 40px auto; width: 525px; text-align: center;">
@@ -24,20 +35,24 @@
 		   	</ol>
 		   	<br/><br/><br/>
 			
-			
 			<form action="payment.php" method="POST">
 				<h2>Choose A Song</h2>
 				<select name="item" id="item">
-					<option value="1"> Never Gonna Give You Up (0.001953125 BTC)</option>
-					<option value="2"> It's Tricky (0.00390625 BTC)</option>
-					<option value="3"> Dragostea Din Tei (0.0078125 BTC)</option>
-					<option value="4"> Nyan Cat (0.015625 BTC)</option>
-					<option value="5"> Gangnam Style (0.03125 BTC)</option>
-					<option value="6"> Call Me Maybe (0.0625 BTC)</option>
-					<option value="7"> Peanut Butter Jelly Time (0.125 BTC)</option>
-					<option value="8"> Friday (0.25 BTC)</option>
-					<option value="9"> What Does The Fox Say? (0.5 BTC)</option>
-					<option value="10"> YOU GET TO CHOOSE THE VIDEO! (1.0 BTC)</option>
+					<? 
+						foreach ($videos as $v):
+							$last_updated = strtotime($v['price_last_updated']);
+							if($last_updated == '') $last_updated = 0;
+							$timediff = time() - $last_updated;
+							if ($timediff > $one_day || $v['price_in_btc'] == 0) {
+								$price_in_btc = file_get_contents($blockchain_root . "tobtc?currency=USD&value=" . $v['price_in_usd']);
+								DB::query('UPDATE videos SET price_in_btc = %d, price_last_updated = %t WHERE id = %i', $price_in_btc, date('Y-m-d H:i:s'), $v['id']);
+							} else {
+								$price_in_btc = $v['price_in_btc'];
+							}
+					?>
+						<option value="<?=$v['id']?>"><?=$v['name']?> (<?=$price_in_btc?> BTC)</option>
+					<? endforeach ?>
+					<option value="0"> YOU GET TO CHOOSE THE VIDEO! (0.02 BTC)</option>
 				</select>
 				<div id="extra">
 					<p><strong>Type in the video code of your chosen video (Example: 'dQw4w9WgXcQ')</strong></p>

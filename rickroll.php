@@ -1,13 +1,16 @@
 <?php
 	include 'include.php';
-	mysql_connect($mysql_host, $mysql_username, $mysql_password) or die(__LINE__ . ' Invalid connect: ' . mysql_error());
-	mysql_select_db($mysql_database) or die( "Unable to select database.");
 
-	$query = "SELECT i.invoice_id, i.video_code, ip.played FROM invoice_payments ip LEFT JOIN invoices i ON ip.invoice_id = i.invoice_id WHERE ip.played = 0 AND ip.value = i.price_in_btc ORDER BY ip.invoice_id ASC LIMIT 1";
-	$result = mysql_query($query);
-	$row = mysql_fetch_array($result);
+	$row = DB::queryFirstRow("SELECT i.invoice_id, i.video_id, i.video_code, i.played FROM invoice_payments ip LEFT JOIN invoices i ON ip.invoice_id = i.invoice_id WHERE i.played = 0 ORDER BY ip.invoice_id ASC LIMIT 1");
 	if($row){
-		$video = $row['video_code'];
+		if($_GET['secret'] == $secret)
+			DB::query('UPDATE invoices SET played = 1 WHERE invoice_id = %i', $row['invoice_id']);
+		if ($row['video_id'] != 0) {
+			$vid = DB::queryFirstRow("SELECT * FROM videos WHERE id = %i", $row['video_id']);
+			$video = $vid['video_code'];
+		} else {
+			$video = $row['video_code'];
+		}
 	} else {
 		$video = '';
 	}
